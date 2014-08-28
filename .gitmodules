@@ -1,0 +1,6 @@
+[submodule "src/php/sailthru"]
+	path = src/php/sailthru
+	url = https://github.com/sailthru/sailthru-php5-client.git
+[submodule "src/ruby/sailthru"]
+	path = src/ruby/sailthru
+	url = https://github.com/sailthru/sailthru-ruby-client.git
