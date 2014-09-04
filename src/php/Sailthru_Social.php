@@ -71,8 +71,6 @@ class Sailthru_Social Extends Sailthru_Client{
     }
     $sync = $this->sync_data($data);
 
-    //var_dump($sync);
-
   }
 
   /*
@@ -80,7 +78,6 @@ class Sailthru_Social Extends Sailthru_Client{
   */
   private function sync_data($data) {
 
-    //var_dump($data);
     try {
       return $post = $this->apiPost('user', $data);
     } catch (Sailthru_Client_Exception $e) {
