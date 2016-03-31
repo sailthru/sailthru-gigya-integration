@@ -23,3 +23,21 @@ $api_key = '';
 $api_secret = '';
 $gigya_api_key = '';
 $gigya_secret_key = '';
+
+```
+
+### Callback URL
+
+The customer will need to create an script on their server to capture the callback url described below and make a User API call. The snippet below outlines how to call the Sailthru JS.
+
+```
+<script src="https://ak.sail-horizon.com/gigya/sync.js"></script>
+
+  <script type="text/javascript">
+    SailthruGigya.callback_url = 'http://customerdomain.com/gigya-callback';
+    gigya.socialize.addEventHandlers({
+        onLogin:SailthruSync
+    });
+  </script>
+```
+
