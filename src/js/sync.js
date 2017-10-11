@@ -1,17 +1,110 @@
 var SailthruGigya = {
 
-  sailthru_response : '',
+  options : {},
+  profile : {},
 
-  syncProfile : function(eventObj, callback_url) {
+  init : function(options) {
 
-    // If callback enabled send to a server side when requiring User API calls
-    if (callback_url.length > 0) {      
+    if (!window.Sailthru) {
+      console.log('Sailthru JS is not loaded.Ensure you have included the JS on page');
+      return;
+    }
+
+    if (gigya) {
+        this.options = options;
+        gigya.socialize.addEventHandlers({
+          onLogin:this.syncProfile
+       });
+    } 
+  },
+
+  syncProfile : function(eventObj) {
+
+      // Allow customer to send this to server side too for additional processing.  
+      if (SailthruGigya.options.callback_url) {
+        SailthruGigya.processCallback(eventObj, SailthruGigya.options.callback_url);
+      }
+
+      var userKey = '';
+      var vars = {};
+      var lists = {};
+      var params = {};
+
+      if ( eventObj.user.email.length <=0 || eventObj.user.email !== undefined ) {
+        userKey = 'email';
+        userId = eventObj.user.email;
+      } else {
+        // only works when Twitter keys enabled
+        if (eventObj.provider == 'twitter') {
+          userKey = 'twitter';
+          userId = eventObj.user.nickname;
+        } else {
+          console.log('Provider not supported');
+          return;
+        }
+        
+      }
+
+      if ( userKey === 'email' || userKey === 'twitter') {
+       
+        // default vars to exclude
+        var exclude = 'UIDSig, UIDSignature, signatureTimestamp, capabilities, statusCode, statusReason, signatureTimestamp, isTempUser, isConnected, isLoggedIn, isSiteUID, isSiteUser, oldestDataUpdatedTimestamp';
+        
+        for (let key in eventObj.user) {        
+          
+          if (exclude.indexOf(key) < 0) {
+            if (eventObj.user[key].length > 0) {
+              vars[key] = eventObj.user[key];
+            }
+          }
+        }
+        // lists
+        if (SailthruGigya.options.lists) {
+          lists =  SailthruGigya.options.lists
+        } 
+
+        var success_message = 'Sailthru User Call Successful';
+        var failure_message = 'Sailthru User Call Failed';
+
+        if (userKey == 'twitter') {
+
+          params = {
+            "id" : userId , 
+            "key" : userKey,
+            "vars" : vars,
+            "lists" : lists,
+            "onSuccess": function(){console.log(success_message)},
+            "onError": function(){console.log(failure_message)},
+          }
+
+        } else {
+
+          params = {
+            "email" : userId , 
+            "key" : userKey,
+            "vars" : vars,
+            "lists" : lists,
+            "onSuccess": function(){console.log(success_message},
+            "onError": function(){console.log(failure_message)},
+          }
+
+        }
+      
+        Sailthru.integration("userSignUp",
+          params
+        );
+      }
+
+  }, 
+
+  processCallback : function(profile, url) {
 
       var x = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
-      var profile = SailthruGigya.serialize_profile(eventObj);
-      var params = 'json='+profile;
+      SailthruGigya.profile = profile;
+      var payload = JSON.stringify(SailthruGigya);
+      var params = 'json='+payload;
 
-      x.open("POST", callback_url, true);
+      x.open("POST", url, true);
       x.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
       x.setRequestHeader("Content-length", params.length);
       x.setRequestHeader("Connection", "close");
@@ -27,63 +120,6 @@ var SailthruGigya = {
       }
       x.send(params);
 
-    } else {
-        
-      if (window.Sailthru) {
-        
-        if ( eventObj.user.email.length <=0 || eventObj.user.email !== undefined ) {
-          var vars = {};
-          var lists = {};
-          // default vars to exclude
-          var exclude = 'UIDSig, UIDSignature, signatureTimestamp, capabilities, statusCode, statusReason, signatureTimestamp, isTempUser, isConnected, isLoggedIn, isSiteUID, isSiteUser, oldestDataUpdatedTimestamp';
-          
-          for (let key in eventObj.user) {        
-            
-            if (exclude.indexOf(key) < 0) {
-              if (eventObj.user[key].length > 0) {
-                vars[key] = eventObj.user[key];
-              }
-            }
-          }
-
-          // lists
-          if (SailthruGigya.lists !== undefined) {
-            var lists = SailthruGigya.lists;
-          } else {
-            var lists = {};
-          }
-
-          Sailthru.integration("userSignUp",
-          {
-            "email" : eventObj.user.email , 
-            "vars" : vars,
-            "lists" : lists,
-            "onSuccess": function(){console.log('User Call Successful')},
-            "onError": function(){console.log('User Call Unsuccessful')},
-          });
-        }
-
-      } else {
-        console.log('Sailthru JS is not loaded.Ensure you have included the JS on page');
-      }
-    }
-  }, 
-
-  // Serialize the profile to JSON
-  serialize_profile: function(obj) {
-    user = JSON.stringify(obj);
-    return user;
-  }
+  },
 
 };
-
-function SailthruSync(eventObj) {
-  
-  if (SailthruGigya.callback_url) {
-    url = SailthruGigya.callback_url;
-  } else {
-    url = '';
-  }
-  SailthruGigya.syncProfile(eventObj,url);
-
-}
