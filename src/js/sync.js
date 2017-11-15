@@ -30,22 +30,8 @@ var SailthruGigya = {
       var lists = {};
       var params = {};
 
-      if ( eventObj.user.email.length <=0 || eventObj.user.email !== undefined ) {
-        userKey = 'email';
-        userId = eventObj.user.email;
-      } else {
-        // only works when Twitter keys enabled
-        if (eventObj.provider == 'twitter') {
-          userKey = 'twitter';
-          userId = eventObj.user.nickname;
-        } else {
-          console.log('Provider not supported');
-          return;
-        }
-        
-      }
 
-      if ( userKey === 'email' || userKey === 'twitter') {
+      if (eventObj.user.email !=='' || typeof eventObj.user.email != 'undefined') {
        
         // default vars to exclude
         var exclude = 'UIDSig, UIDSignature, signatureTimestamp, capabilities, statusCode, statusReason, signatureTimestamp, isTempUser, isConnected, isLoggedIn, isSiteUID, isSiteUser, oldestDataUpdatedTimestamp';
@@ -65,33 +51,15 @@ var SailthruGigya = {
 
         var success_message = 'Sailthru User Call Successful';
         var failure_message = 'Sailthru User Call Failed';
-
-        if (userKey == 'twitter') {
-
-          params = {
-            "id" : userId , 
-            "key" : userKey,
-            "vars" : vars,
-            "lists" : lists,
-            "onSuccess": function(){console.log(success_message)},
-            "onError": function(){console.log(failure_message)},
-          }
-
-        } else {
-
-          params = {
-            "email" : userId , 
-            "key" : userKey,
-            "vars" : vars,
-            "lists" : lists,
-            "onSuccess": function(){console.log(success_message},
-            "onError": function(){console.log(failure_message)},
-          }
-
-        }
       
         Sailthru.integration("userSignUp",
-          params
+         {
+          "email" : eventObj.user.email, 
+          "vars" : vars,
+          "lists" : lists,
+          "onSuccess" : function(){console.log(success_message)},
+          "onError": function(){console.log(failure_message)},
+         }
         );
       }
 

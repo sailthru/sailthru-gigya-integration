@@ -10,7 +10,7 @@ include 'config.api.php';
     Update the customerId with your Sailthru customer Id
   -->
   <script src="https://ak.sail-horizon.com/spm/spm.v1.min.js"></script>
-  <script>Sailthru.init({ customerId: '' });</script>
+  <script>Sailthru.init({ customerId: '<?php echo $customer_id?>' });</script>
   <!-- socialize.js script should only be included once -->
   <script type="text/javascript" src="http://cdn.gigya.com/js/socialize.js?apiKey=<?php echo $gigya_api_key?>">
   {
