@@ -30,12 +30,15 @@ var SailthruGigya = {
       var lists = {};
       var params = {};
 
+      if (eventObj.user.email !=='' || typeof eventObj.user.email == 'undefined') {
 
-      if (eventObj.user.email !=='' || typeof eventObj.user.email != 'undefined') {
-       
         // default vars to exclude
         var exclude = 'UIDSig, UIDSignature, signatureTimestamp, capabilities, statusCode, statusReason, signatureTimestamp, isTempUser, isConnected, isLoggedIn, isSiteUID, isSiteUser, oldestDataUpdatedTimestamp';
-        
+
+        if (SailthruGigya.options.exclude_vars) {
+           exclude = exclude + ',' + SailthruGigya.options.exclude_vars;
+        }
+
         for (let key in eventObj.user) {        
           
           if (exclude.indexOf(key) < 0) {

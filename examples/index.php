@@ -24,7 +24,7 @@ include 'config.api.php';
 
    SailthruGigya.init({
     "lists" : {'List1' : 1, 'list2': 0, 'list3': 1},
-    "exclude_vars" : []
+    "exclude_vars" : 'var1, var2, var3'
    });
 
   </script>

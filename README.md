@@ -41,33 +41,43 @@ advantage of Lifecycle Optimizer then they can add the following line of code be
 
 ```
 <script type="text/javascript">
-    SailthruGigya.lists = {"test" : 1 };
-    gigya.socialize.addEventHandlers({
-        onLogin:SailthruSync
-    });
+   SailthruGigya.init({
+    "lists" : {'List1' : 1}
+   });
   </script>
 ```
 
 
-To add a user to multiple lists configure the lists with a 1 to add the user and 0 to remove the user from the list. 
+To add a user to multiple lists configure the lists. 
 
 ```
 <script type="text/javascript">
-    SailthruGigya.lists = {"test" : 0 };
-    gigya.socialize.addEventHandlers({
-        onLogin:SailthruSync
-    });
+   SailthruGigya.init({
+    "lists" : {'List1' : 1, 'list2': 1, 'list3': 1},
+   });
   </script>
 ```
 
 To combine a list addition and removal you can combine both params. 
 ```
 <script type="text/javascript">
-    SailthruGigya.lists = {"test" : 0, "test2" : 1 };
-    gigya.socialize.addEventHandlers({
-        onLogin:SailthruSync
-    });
+   SailthruGigya.init({
+    "lists" : {'List1' : 1, 'list2': 0, 'list3': 1},
+   });
   </script>
+```
+
+Excluding profile vars passed from Gigya by adding a comma separated list to the exclude_vars paramater. This will be added to the existing excluded vars. 
+
+```
+ SailthruGigya.init({
+    "exclude_vars" : 'var1, var2, var3'
+   });
+```
+
+The following vars are automatically removed from the Gigya payload and not passed to Sailthru as profile vars. 
+```
+        'UIDSig, UIDSignature, signatureTimestamp, capabilities, statusCode, statusReason, signatureTimestamp, isTempUser, isConnected, isLoggedIn, isSiteUID, isSiteUser, oldestDataUpdatedTimestamp';
 ```
 
 ### Server Side Processing
