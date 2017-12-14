@@ -1,22 +1,32 @@
-<?php include 'config.api.php'; ?>
+<?php 
+// Add your Gigya API key here. 
+include 'config.api.php';
+?>
 
 <!DOCTYPE html>
 <html lang="en">
   <head>
+  <!-- 
+    Update the customerId with your Sailthru customer Id
+  -->
+  <script src="https://ak.sail-horizon.com/spm/spm.v1.min.js"></script>
+  <script>Sailthru.init({ customerId: '<?php echo $customer_id?>' });</script>
   <!-- socialize.js script should only be included once -->
   <script type="text/javascript" src="http://cdn.gigya.com/js/socialize.js?apiKey=<?php echo $gigya_api_key?>">
   {
     siteName: 'gigya.dev'
     ,enabledProviders: 'facebook,twitter, linkedin'
   }
-</script>
-<script src="sync.js"></script>
+  </script> 
+<script src="../src/js/sync.js"></script>
 
   <script type="text/javascript">
-    SailthruGigya.callback_url = 'http://gigya.dev/gigya-callback.php';
-    gigya.socialize.addEventHandlers({
-        onLogin:SailthruSync
-    });
+
+   SailthruGigya.init({
+    "lists" : {'List1' : 1, 'list2': 0, 'list3': 1},
+    "exclude_vars" : 'var1, var2, var3'
+   });
+
   </script>
   </head>
 
